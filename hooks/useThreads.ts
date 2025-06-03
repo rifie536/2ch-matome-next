@@ -7,10 +7,15 @@ import { SearchFilters } from '@/types/thread';
 export function useThreads(filters?: SearchFilters) {
   return useInfiniteQuery({
     queryKey: ['threads', filters],
-    queryFn: ({ pageParam = 1 }) => api.getThreads(pageParam, 20, filters),
+    queryFn: ({ pageParam = 1 }) => {
+      console.log('useThreads queryFn called with pageParam:', pageParam);
+      return api.getThreads(pageParam, 20, filters);
+    },
     getNextPageParam: (lastPage, pages) => {
       const totalPages = Math.ceil(lastPage.total / 20);
-      const nextPage = pages.length + 1;
+      const currentPage = pages.length;
+      const nextPage = currentPage + 1;
+      console.log('getNextPageParam:', { totalPages, currentPage, nextPage, hasMore: nextPage <= totalPages });
       return nextPage <= totalPages ? nextPage : undefined;
     },
     initialPageParam: 1,
