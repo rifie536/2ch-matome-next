@@ -162,11 +162,11 @@ export function BingJapanStyle() {
 
         {/* Main Content */}
         <div className="container mx-auto px-4 py-6">
-          <div className="grid grid-cols-12 gap-6">
+          <div className="max-w-6xl mx-auto">
             {/* Main News Area */}
-            <div className="col-span-12 lg:col-span-8">
+            <div>
               {/* Grid Layout for first 12 items */}
-              <div className="grid grid-cols-4 gap-3 mb-6">
+              <div className="grid grid-cols-6 gap-3 mb-6">
                 {/* Featured Carousel */}
                 <FeaturedCarousel threads={gridThreads} />
 
@@ -233,7 +233,7 @@ export function BingJapanStyle() {
               {listThreads.length > 0 && (
                 <div className="space-y-4">
                   <h3 className="text-lg font-bold text-gray-900 mb-4">最新スレッド</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {listThreads.map((thread, index) => (
                       <motion.div
                         key={thread.id}
@@ -280,86 +280,6 @@ export function BingJapanStyle() {
                 ) : (
                   allThreads.length > 0 && <p className="text-gray-500">すべてのスレッドを読み込みました</p>
                 )}
-              </div>
-            </div>
-
-            {/* Sidebar */}
-            <div className="col-span-12 lg:col-span-4 space-y-4">
-              <div className="lg:sticky lg:top-20">
-                {/* Top Stories */}
-                <div className="bg-white/95 backdrop-blur-sm rounded-lg shadow-sm p-4 mb-4">
-                  <h3 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
-                    <span className="text-red-500">🔥</span>
-                    トップストーリー
-                  </h3>
-                  <div className="space-y-3">
-                    {trendingThreads?.slice(0, 5).map((thread, index) => (
-                      <Link
-                        key={thread.id}
-                        href={`/thread/${thread.id}`}
-                        className="block group"
-                      >
-                        <div className="flex gap-3 p-2 -m-2 rounded-lg hover:bg-gray-50 transition-colors">
-                          <span className="text-2xl font-bold text-transparent bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text">{index + 1}</span>
-                          <div className="flex-1">
-                            <h4 className="text-sm font-medium group-hover:text-blue-600 line-clamp-2">
-                              {thread.title}
-                            </h4>
-                            <p className="text-xs text-gray-500 mt-1">
-                              {thread.board} • {formatMomentum(thread.momentum)}
-                            </p>
-                          </div>
-                        </div>
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Weather Widget */}
-                <div className="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-lg p-4 mb-4 shadow-lg">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-medium">東京</span>
-                    <MapPin className="w-4 h-4" />
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="text-3xl font-bold">22°</div>
-                      <div className="text-sm opacity-90">晴れ</div>
-                    </div>
-                    <div className="text-5xl">☀️</div>
-                  </div>
-                  <div className="grid grid-cols-5 gap-1 mt-4 text-center">
-                    {['今日', '明日', '木曜', '金曜', '土曜'].map((day, i) => (
-                      <div key={day} className="text-xs">
-                        <div className="opacity-70">{day}</div>
-                        <div className="text-lg my-1">☁️</div>
-                        <div>{20 + i}°</div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Stock Widget */}
-                <div className="bg-white/95 backdrop-blur-sm rounded-lg shadow-sm p-4 mb-4">
-                  <h3 className="font-bold text-gray-900 mb-3">市況情報</h3>
-                  <div className="space-y-3">
-                    {[
-                      { name: '日経平均', value: '32,850', change: '+2.40%', up: true },
-                      { name: 'TOPIX', value: '2,245', change: '-0.32%', up: false },
-                      { name: 'ドル円', value: '151.25', change: '+0.85%', up: true },
-                    ].map((stock) => (
-                      <div key={stock.name} className="flex items-center justify-between p-2 -m-2 rounded-lg hover:bg-gray-50 transition-colors">
-                        <span className="text-sm font-medium">{stock.name}</span>
-                        <div className="text-right">
-                          <div className="text-sm font-bold">{stock.value}</div>
-                          <div className={`text-xs ${stock.up ? 'text-green-600' : 'text-red-600'}`}>
-                            {stock.change}
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
               </div>
             </div>
           </div>

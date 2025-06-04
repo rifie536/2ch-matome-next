@@ -31,7 +31,7 @@ export function FeaturedCarousel({ threads }: FeaturedCarouselProps) {
   if (currentPage < 3 && featuredThreads[currentPage]) {
     const thread = featuredThreads[currentPage];
     return (
-      <div className="col-span-2 row-span-2 relative group">
+      <div className="col-span-3 row-span-2 relative group">
         <AnimatePresence mode="wait">
           <motion.div
             key={currentPage}
@@ -100,7 +100,7 @@ export function FeaturedCarousel({ threads }: FeaturedCarouselProps) {
   // ページ4: シューフーズスタイル（食べ物・料理）
   if (currentPage === 3) {
     return (
-      <div className="col-span-2 row-span-2 relative group">
+      <div className="col-span-3 row-span-2 relative group">
         <AnimatePresence mode="wait">
           <motion.div
             key={currentPage}
@@ -185,7 +185,7 @@ export function FeaturedCarousel({ threads }: FeaturedCarouselProps) {
   // ページ5: HoYoverse広告スタイル
   if (currentPage === 4) {
     return (
-      <div className="col-span-2 row-span-2 relative group">
+      <div className="col-span-3 row-span-2 relative group">
         <AnimatePresence mode="wait">
           <motion.div
             key={currentPage}
