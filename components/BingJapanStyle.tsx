@@ -1,22 +1,17 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Search, Menu, Grid3X3, Sun, Moon, MapPin, Loader2 } from 'lucide-react';
-import { useThreads, useTrendingThreads } from '@/hooks/useThreads';
-import { formatMomentum, getThreadEmoji, formatTimeAgo } from '@/lib/utils';
+import { Search, Grid3X3, Loader2 } from 'lucide-react';
+import { getThreadEmoji, formatTimeAgo } from '@/lib/utils';
 import Link from 'next/link';
-import { motion, useInView } from 'framer-motion';
-import { FeaturedCarousel } from './FeaturedCarousel';
+import { motion } from 'framer-motion';
+import { useRSSFeeds } from '@/hooks/useRSSFeeds';
+import { RSSCarousel } from './RSSCarousel';
 
 export function BingJapanStyle() {
   const [searchQuery, setSearchQuery] = useState('');
   const [backgroundImage, setBackgroundImage] = useState(0);
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useThreads();
-  const { data: trendingThreads } = useTrendingThreads(15);
-  const loadMoreRef = useRef(null);
-  const isInView = useInView(loadMoreRef, {
-    margin: '100px', // 100px手前で検出開始
-  });
+  const { data: rssData, isLoading } = useRSSFeeds();
 
   // 美しい風景画像のリスト（Unsplashから）
   const backgroundImages = [
@@ -26,16 +21,6 @@ export function BingJapanStyle() {
     'https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=1920&h=1080&fit=crop', // 桜
     'https://images.unsplash.com/photo-1478436127897-769e1b3f0f36?w=1920&h=1080&fit=crop', // 紅葉
   ];
-  
-  const allThreads = data?.pages.flatMap((page) => page.threads) ?? [];
-
-  useEffect(() => {
-    console.log('Scroll detection:', { isInView, hasNextPage, isFetchingNextPage });
-    if (isInView && hasNextPage && !isFetchingNextPage) {
-      console.log('Fetching next page...');
-      fetchNextPage();
-    }
-  }, [isInView, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,13 +29,21 @@ export function BingJapanStyle() {
     }
   };
 
-  // カルーセルのスレッド
-  const carouselThreads = trendingThreads?.slice(0, 8) || [];
-  
-  // トレンディングから最初の12個をグリッド用に使用
-  const gridThreads = trendingThreads?.slice(0, 12) || [];
-  // すべてのスレッドを通常のリスト表示用に使用
-  const listThreads = allThreads;
+  // RSSフィードのアイテムをスレッド形式に変換
+  const rssThreads = rssData?.allItems.map((item, index) => ({
+    id: item.id,
+    title: item.title,
+    board: item.source,
+    preview: item.description?.replace(/<[^>]*>/g, '').substring(0, 150) || '',
+    responseCount: 0,
+    momentum: 0,
+    createdAt: item.pubDate,
+    updatedAt: item.pubDate,
+    link: item.link,
+    thumbnail: item.thumbnail,
+    isExternal: true,
+    categories: item.categories,
+  })) || [];
 
   if (isLoading) {
     return (
@@ -140,21 +133,34 @@ export function BingJapanStyle() {
         <div className="bg-black/10 backdrop-blur-sm border-b border-white/10 py-3">
           <div className="container mx-auto px-4">
             <div className="flex gap-3 overflow-x-auto scrollbar-hide">
-              {carouselThreads.map((thread) => (
-                <Link
+              {rssThreads.slice(0, 10).map((thread) => (
+                <a
                   key={thread.id}
-                  href={`/thread/${thread.id}`}
+                  href={thread.isExternal ? thread.link : `/thread/${thread.id}`}
+                  target={thread.isExternal ? "_blank" : undefined}
+                  rel={thread.isExternal ? "noopener noreferrer" : undefined}
                   className="flex-none group"
                 >
                   <div className="w-40 h-24 bg-white rounded-lg overflow-hidden relative shadow-sm hover:shadow-md transition-all hover:scale-105">
-                    <div className="absolute inset-0 bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-3xl text-white">
-                      {getThreadEmoji(thread.board)}
-                    </div>
+                    {thread.thumbnail ? (
+                      <img 
+                        src={thread.thumbnail} 
+                        alt={thread.title}
+                        className="absolute inset-0 w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="absolute inset-0 bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-3xl text-white">
+                        {getThreadEmoji(thread.board)}
+                      </div>
+                    )}
                     <div className="absolute bottom-0 left-0 right-0 bg-black/60 p-2">
                       <p className="text-white text-xs line-clamp-2">{thread.title}</p>
+                      {thread.isExternal && (
+                        <span className="text-white/70 text-[10px]">{thread.board}</span>
+                      )}
                     </div>
                   </div>
-                </Link>
+                </a>
               ))}
             </div>
           </div>
@@ -165,122 +171,73 @@ export function BingJapanStyle() {
           <div className="max-w-6xl mx-auto">
             {/* Main News Area */}
             <div>
-              {/* Grid Layout for first 12 items */}
-              <div className="grid grid-cols-6 gap-3 mb-6">
-                {/* Featured Carousel */}
-                <FeaturedCarousel threads={gridThreads} />
-
-                {/* Medium Cards */}
-                {gridThreads.slice(1, 5).map((thread) => (
-                  <Link
-                    key={thread.id}
-                    href={`/thread/${thread.id}`}
-                    className="col-span-1 group"
-                  >
-                    <div className="bg-white/95 backdrop-blur-sm rounded-lg shadow-sm hover:shadow-lg transition-all h-40 overflow-hidden hover:scale-105">
-                      <div className="h-20 bg-gradient-to-br from-green-400 to-blue-500 flex items-center justify-center text-3xl text-white">
-                        {getThreadEmoji(thread.board)}
-                      </div>
-                      <div className="p-3">
-                        <h4 className="text-sm font-medium group-hover:text-blue-600 line-clamp-2">
-                          {thread.title}
-                        </h4>
-                        <p className="text-xs text-gray-500 mt-1">{thread.board}</p>
-                      </div>
-                    </div>
-                  </Link>
-                ))}
-
-                {/* Bottom Large Cards */}
-                {gridThreads.slice(5, 7).map((thread) => (
-                  <Link
-                    key={thread.id}
-                    href={`/thread/${thread.id}`}
-                    className="col-span-2 group"
-                  >
-                    <div className="bg-white/95 backdrop-blur-sm rounded-lg shadow-sm hover:shadow-lg transition-all overflow-hidden hover:scale-105">
-                      <div className="h-32 bg-gradient-to-br from-purple-400 to-pink-500 flex items-center justify-center text-5xl text-white">
-                        {getThreadEmoji(thread.board)}
-                      </div>
-                      <div className="p-4">
-                        <h3 className="font-medium mb-1 group-hover:text-blue-600 line-clamp-2">
-                          {thread.title}
-                        </h3>
-                        <p className="text-sm text-gray-600 line-clamp-2">{thread.preview}</p>
-                      </div>
-                    </div>
-                  </Link>
-                ))}
-
-                {/* Small Cards Grid */}
-                {gridThreads.slice(7, 12).map((thread) => (
-                  <Link
-                    key={thread.id}
-                    href={`/thread/${thread.id}`}
-                    className="col-span-1 group"
-                  >
-                    <div className="bg-white/95 backdrop-blur-sm rounded-lg shadow-sm hover:shadow-lg transition-all h-32 p-3 hover:scale-105">
-                      <h4 className="text-sm font-medium group-hover:text-blue-600 line-clamp-3 mb-2">
-                        {thread.title}
-                      </h4>
-                      <p className="text-xs text-gray-500">{thread.board}</p>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-
-              {/* Additional threads in list format */}
-              {listThreads.length > 0 && (
+              {/* RSS threads in larger card format - 4 per row */}
+              {rssThreads.length > 0 && (
                 <div className="space-y-4">
-                  <h3 className="text-lg font-bold text-gray-900 mb-4">最新スレッド</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {listThreads.map((thread, index) => (
-                      <motion.div
-                        key={thread.id}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: index * 0.05 }}
-                      >
-                        <Link
-                          href={`/thread/${thread.id}`}
-                          className="block bg-white/95 backdrop-blur-sm rounded-lg shadow-sm hover:shadow-lg transition-all p-4 group hover:scale-[1.02]"
+                  <h3 className="text-lg font-bold text-white mb-4 bg-black/20 backdrop-blur-sm p-3 rounded-lg">最新記事</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    {/* カルーセル - 最初の位置（2列分） */}
+                    <div className="lg:col-span-2 h-72">
+                      <RSSCarousel threads={rssThreads.slice(0, 5)} />
+                    </div>
+                    
+                    {/* 通常のカード */}
+                    {rssThreads.slice(5).map((thread, index) => {
+                      // 2列分のカードのパターンを調整
+                      // 1行目の右側（index 0,1）と8行目の右側（index 26,27）を埋める
+                      const isWideCard = index === 24 || index === 27; // 7行目と8行目の最初のカード
+                      
+                      return (
+                        <motion.div
+                          key={thread.id}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: (index + 1) * 0.05 }}
+                          className={isWideCard ? "lg:col-span-2" : ""}
                         >
-                          <div className="flex gap-4">
-                            <div className="w-16 h-16 bg-gradient-to-br from-indigo-400 to-purple-500 rounded-lg flex items-center justify-center text-2xl text-white flex-shrink-0">
-                              {getThreadEmoji(thread.board)}
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <h4 className="font-medium group-hover:text-blue-600 line-clamp-1 mb-1">
-                                {thread.title}
-                              </h4>
-                              <p className="text-sm text-gray-600 line-clamp-2 mb-2">{thread.preview}</p>
-                              <div className="flex items-center gap-3 text-xs text-gray-500">
-                                <span>{thread.board}</span>
-                                <span>💬 {thread.responseCount}</span>
-                                <span>{formatTimeAgo(new Date(thread.updatedAt))}</span>
+                          <a
+                            href={thread.link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="block bg-white/95 backdrop-blur-sm rounded-lg shadow-sm hover:shadow-lg transition-all p-5 group hover:scale-[1.02] h-72"
+                          >
+                            <div className="flex flex-col h-full">
+                              {thread.thumbnail ? (
+                                <div className={`${isWideCard ? 'h-24' : 'h-20'} rounded-lg overflow-hidden mb-4`}>
+                                  <img 
+                                    src={thread.thumbnail} 
+                                    alt={thread.title}
+                                    className="w-full h-full object-cover"
+                                  />
+                                </div>
+                              ) : (
+                                <div className={`${isWideCard ? 'h-24' : 'h-20'} bg-gradient-to-br from-indigo-400 to-purple-500 rounded-lg flex items-center justify-center ${isWideCard ? 'text-4xl' : 'text-3xl'} text-white mb-4`}>
+                                  {getThreadEmoji(thread.board)}
+                                </div>
+                              )}
+                              <div className="flex-1 flex flex-col justify-between">
+                                <div>
+                                  <h4 className={`font-medium group-hover:text-blue-600 line-clamp-2 mb-2 ${isWideCard ? 'text-lg' : 'text-base'}`}>
+                                    {thread.title}
+                                  </h4>
+                                  <p className="text-sm text-gray-600 line-clamp-3 mb-3">{thread.preview}</p>
+                                </div>
+                                <div className="flex items-center gap-3 text-xs text-gray-500 mt-auto">
+                                  <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded">{thread.board}</span>
+                                  {thread.categories && thread.categories.length > 0 && (
+                                    <span>{thread.categories[0]}</span>
+                                  )}
+                                  <span>{formatTimeAgo(new Date(thread.updatedAt))}</span>
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        </Link>
-                      </motion.div>
-                    ))}
+                          </a>
+                        </motion.div>
+                      );
+                    })}
                   </div>
                 </div>
               )}
-
-              {/* Load More Trigger */}
-              <div ref={loadMoreRef} className="mt-8 p-8 flex justify-center bg-white/50 backdrop-blur-sm rounded-lg">
-                {isFetchingNextPage ? (
-                  <div className="flex items-center gap-2 text-gray-600">
-                    <Loader2 className="w-5 h-5 animate-spin" />
-                    <span>新しいスレッドを読み込み中...</span>
-                  </div>
-                ) : hasNextPage ? (
-                  <p className="text-gray-500">スクロールして更に読み込む</p>
-                ) : (
-                  allThreads.length > 0 && <p className="text-gray-500">すべてのスレッドを読み込みました</p>
-                )}
-              </div>
             </div>
           </div>
         </div>

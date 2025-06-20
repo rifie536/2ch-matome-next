@@ -2,7 +2,7 @@
 
 import { useThread } from '@/hooks/useThreads';
 import { formatTimeAgo, formatMomentum } from '@/lib/utils';
-import { MessageCircle, TrendingUp, Clock, ArrowLeft, Home } from 'lucide-react';
+import { MessageCircle, TrendingUp, Clock, Home } from 'lucide-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { Header } from '@/components/Header';
@@ -111,7 +111,7 @@ export default function ThreadPage() {
                           href={`#res${replyNum}`}
                           className="inline-block mr-2 text-blue-600 hover:underline"
                         >
-                          >>{replyNum}
+                          &gt;&gt;{replyNum}
                         </a>
                       ))}
                     </div>
