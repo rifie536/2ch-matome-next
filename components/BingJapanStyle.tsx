@@ -153,10 +153,10 @@ export function BingJapanStyle() {
                         {getThreadEmoji(thread.board)}
                       </div>
                     )}
-                    <div className="absolute bottom-0 left-0 right-0 bg-black/60 p-2">
-                      <p className="text-white text-xs line-clamp-2">{thread.title}</p>
+                    <div className="absolute bottom-0 left-0 right-0 bg-black/60 p-3">
+                      <p className="text-white text-sm font-medium line-clamp-2">{thread.title}</p>
                       {thread.isExternal && (
-                        <span className="text-white/70 text-[10px]">{thread.board}</span>
+                        <span className="text-white/70 text-xs">{thread.board}</span>
                       )}
                     </div>
                   </div>
@@ -168,24 +168,25 @@ export function BingJapanStyle() {
 
         {/* Main Content */}
         <div className="container mx-auto px-4 py-6">
-          <div className="max-w-6xl mx-auto">
+          <div className="max-w-7xl mx-auto">
             {/* Main News Area */}
             <div>
               {/* RSS threads in larger card format - 4 per row */}
               {rssThreads.length > 0 && (
-                <div className="space-y-4">
-                  <h3 className="text-lg font-bold text-white mb-4 bg-black/20 backdrop-blur-sm p-3 rounded-lg">最新記事</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="rounded-lg" style={{backgroundColor: 'rgba(255, 255, 255, 0.7)', width: '1260px', margin: '0 auto'}}>
+                  <h3 className="text-lg font-bold text-gray-900 pt-3 px-3">最新記事</h3>
+                  <div className="py-2 px-12">
+                    <div className="grid gap-3" style={{gridTemplateColumns: '300px 300px 300px 300px', justifyContent: 'center'}}>
                     {/* カルーセル - 最初の位置（2列分） */}
-                    <div className="lg:col-span-2 h-72">
+                    <div style={{gridColumn: 'span 2', height: '300px'}}>
                       <RSSCarousel threads={rssThreads.slice(0, 5)} />
                     </div>
                     
                     {/* 通常のカード */}
                     {rssThreads.slice(5).map((thread, index) => {
-                      // 2列分のカードのパターンを調整
-                      // 1行目の右側（index 0,1）と8行目の右側（index 26,27）を埋める
-                      const isWideCard = index === 24 || index === 27; // 7行目と8行目の最初のカード
+                      // 4列レイアウトでの2列分のカードのパターン
+                      // 3番目と10番目のカードを2列分に
+                      const isWideCard = index === 2 || index === 9;
                       
                       return (
                         <motion.div
@@ -193,48 +194,89 @@ export function BingJapanStyle() {
                           initial={{ opacity: 0, y: 20 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: (index + 1) * 0.05 }}
-                          className={isWideCard ? "lg:col-span-2" : ""}
+                          style={{gridColumn: isWideCard ? 'span 2' : 'span 1'}}
                         >
-                          <a
-                            href={thread.link}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="block bg-white/95 backdrop-blur-sm rounded-lg shadow-sm hover:shadow-lg transition-all p-5 group hover:scale-[1.02] h-72"
-                          >
-                            <div className="flex flex-col h-full">
+                          {isWideCard ? (
+                            // 2列分のカード - 画像で満たす
+                            <a
+                              href={thread.link}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="block relative rounded-lg shadow-sm hover:shadow-lg transition-all group hover:scale-[1.02] overflow-hidden"
+                              style={{height: '300px'}}
+                            >
                               {thread.thumbnail ? (
-                                <div className={`${isWideCard ? 'h-24' : 'h-20'} rounded-lg overflow-hidden mb-4`}>
-                                  <img 
-                                    src={thread.thumbnail} 
-                                    alt={thread.title}
-                                    className="w-full h-full object-cover"
-                                  />
-                                </div>
+                                <img 
+                                  src={thread.thumbnail} 
+                                  alt={thread.title}
+                                  className="absolute inset-0 w-full h-full object-cover"
+                                />
                               ) : (
-                                <div className={`${isWideCard ? 'h-24' : 'h-20'} bg-gradient-to-br from-indigo-400 to-purple-500 rounded-lg flex items-center justify-center ${isWideCard ? 'text-4xl' : 'text-3xl'} text-white mb-4`}>
-                                  {getThreadEmoji(thread.board)}
-                                </div>
+                                <div className="absolute inset-0 bg-gradient-to-br from-indigo-400 to-purple-500" />
                               )}
-                              <div className="flex-1 flex flex-col justify-between">
-                                <div>
-                                  <h4 className={`font-medium group-hover:text-blue-600 line-clamp-2 mb-2 ${isWideCard ? 'text-lg' : 'text-base'}`}>
-                                    {thread.title}
-                                  </h4>
-                                  <p className="text-sm text-gray-600 line-clamp-3 mb-3">{thread.preview}</p>
+                              {/* オーバーレイ */}
+                              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+                              
+                              {/* コンテンツ */}
+                              <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+                                <div className="mb-2">
+                                  <span className="inline-block px-3 py-1 bg-white/20 backdrop-blur-sm text-white text-xs font-bold rounded-full">
+                                    {thread.board}
+                                  </span>
                                 </div>
-                                <div className="flex items-center gap-3 text-xs text-gray-500 mt-auto">
-                                  <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded">{thread.board}</span>
+                                <h4 className="font-bold line-clamp-3 mb-3" style={{fontSize: '20px'}}>
+                                  {thread.title}
+                                </h4>
+                                <div className="flex items-center gap-3 text-sm text-gray-300">
                                   {thread.categories && thread.categories.length > 0 && (
-                                    <span>{thread.categories[0]}</span>
+                                    <span className="font-bold">{thread.categories[0]}</span>
                                   )}
-                                  <span>{formatTimeAgo(new Date(thread.updatedAt))}</span>
+                                  <span className="font-bold">{formatTimeAgo(new Date(thread.updatedAt))}</span>
                                 </div>
                               </div>
-                            </div>
-                          </a>
+                            </a>
+                          ) : (
+                            // 通常のカード
+                            <a
+                              href={thread.link}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="block bg-white/95 backdrop-blur-sm rounded-lg shadow-sm hover:shadow-lg transition-all group hover:scale-[1.02] overflow-hidden"
+                              style={{height: '300px'}}
+                            >
+                              <div className="flex flex-col h-full">
+                                {thread.thumbnail ? (
+                                  <div className="h-1/2 overflow-hidden">
+                                    <img 
+                                      src={thread.thumbnail} 
+                                      alt={thread.title}
+                                      className="w-full h-full object-cover"
+                                    />
+                                  </div>
+                                ) : (
+                                  <div className="h-1/2 bg-gradient-to-br from-indigo-400 to-purple-500 flex items-center justify-center text-4xl text-white">
+                                    {getThreadEmoji(thread.board)}
+                                  </div>
+                                )}
+                                <div className="flex-1 flex flex-col justify-between p-4">
+                                  <h4 className="font-bold group-hover:text-blue-600 line-clamp-3" style={{fontSize: '20px'}}>
+                                    {thread.title}
+                                  </h4>
+                                  <div className="flex items-center gap-3 text-xs text-gray-500 mt-auto">
+                                    <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded font-bold">{thread.board}</span>
+                                    {thread.categories && thread.categories.length > 0 && (
+                                      <span className="font-bold">{thread.categories[0]}</span>
+                                    )}
+                                    <span className="font-bold">{formatTimeAgo(new Date(thread.updatedAt))}</span>
+                                  </div>
+                                </div>
+                              </div>
+                            </a>
+                          )}
                         </motion.div>
                       );
                     })}
+                    </div>
                   </div>
                 </div>
               )}

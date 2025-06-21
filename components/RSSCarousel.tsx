@@ -70,16 +70,15 @@ export function RSSCarousel({ threads }: RSSCarouselProps) {
             {/* Content overlay */}
             <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent p-6">
               <div className="mb-2">
-                <span className="inline-block px-3 py-1 bg-blue-600 text-white text-xs rounded-full">
+                <span className="inline-block px-3 py-1 bg-blue-600 text-white text-xs font-bold rounded-full">
                   {thread.board}
                 </span>
               </div>
-              <h3 className="font-bold text-xl text-white mb-2 line-clamp-2">
+              <h3 className="font-bold text-white mb-3 line-clamp-3" style={{fontSize: '20px'}}>
                 {thread.title}
               </h3>
-              <p className="text-sm text-gray-200 line-clamp-2 mb-3">{thread.preview}</p>
               <div className="flex items-center gap-4 text-xs text-gray-300">
-                <span>{formatTimeAgo(new Date(thread.updatedAt))}</span>
+                <span className="font-bold">{formatTimeAgo(new Date(thread.updatedAt))}</span>
               </div>
             </div>
           </div>

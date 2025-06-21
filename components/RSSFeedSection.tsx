@@ -40,12 +40,12 @@ export function RSSFeedSection() {
               href={item.link}
               target="_blank"
               rel="noopener noreferrer"
-              className="block bg-white/95 backdrop-blur-sm rounded-lg overflow-hidden hover:shadow-lg transition-all hover:scale-[1.02] group"
+              className="block bg-white/95 backdrop-blur-sm rounded-lg overflow-hidden hover:shadow-lg transition-all hover:scale-[1.02] group h-72"
             >
               <div className="flex flex-col h-full">
-                {/* サムネイル画像 */}
-                {item.thumbnail && (
-                  <div className="h-48 overflow-hidden bg-gray-100">
+                {/* サムネイル画像 - 半分を占有 */}
+                {item.thumbnail ? (
+                  <div className="h-1/2 overflow-hidden bg-gray-100">
                     <img 
                       src={item.thumbnail} 
                       alt={item.title}
@@ -54,6 +54,10 @@ export function RSSFeedSection() {
                         e.currentTarget.style.display = 'none';
                       }}
                     />
+                  </div>
+                ) : (
+                  <div className="h-1/2 bg-gradient-to-br from-indigo-400 to-purple-500 flex items-center justify-center text-4xl text-white">
+                    📰
                   </div>
                 )}
                 
@@ -65,18 +69,9 @@ export function RSSFeedSection() {
                     <ExternalLink className="w-3 h-3 text-gray-400 group-hover:text-blue-600 shrink-0" />
                   </div>
                   
-                  <h3 className="font-medium text-gray-900 line-clamp-2 mb-2 group-hover:text-blue-600 text-sm">
+                  <h3 className="font-medium text-gray-900 line-clamp-2 group-hover:text-blue-600 text-base">
                     {item.title}
                   </h3>
-                  
-                  {!item.thumbnail && item.description && (
-                    <p 
-                      className="text-xs text-gray-600 line-clamp-3 mb-3 flex-1"
-                      dangerouslySetInnerHTML={{ 
-                        __html: item.description.replace(/<[^>]*>/g, '').substring(0, 100) + '...'
-                      }}
-                    />
-                  )}
                   
                   <div className="flex items-center gap-3 text-xs text-gray-500 mt-auto">
                     <span className="flex items-center gap-1">
