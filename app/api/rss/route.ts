@@ -3,67 +3,100 @@ import Parser from 'rss-parser';
 
 const parser = new Parser();
 
+// カテゴリ別の色設定
+function generatePlaceholderImage(siteName: string, category: string): string {
+  const categoryColors: { [key: string]: string } = {
+    'ニュース': 'E53E3E', // 赤
+    'VIP': '38A169', // 緑
+    'ゲーム': '3182CE', // 青
+    '総合': '805AD5', // 紫
+    'アニメ': 'D69E2E', // オレンジ
+    'スポーツ': '319795', // ティール
+    '料理': 'DD6B20', // オレンジ系
+    'IT': '2D3748', // ダークグレー
+    '理系': '1A365D', // ダークブルー
+    'オカルト': '553C9A', // ダークパープル
+    '猫': 'F56565', // ピンク
+    '音楽': 'ED64A6', // マゼンタ
+  };
+  
+  const backgroundColor = categoryColors[category] || '4F46E5'; // デフォルトは紫
+  return `https://ui-avatars.com/api/?name=${encodeURIComponent(siteName)}&size=300&background=${backgroundColor}&color=FFFFFF&bold=true`;
+}
+
 // RSSフィードのURL一覧
 const RSS_FEEDS = [
   {
     name: 'アルファルファモザイク',
     url: 'https://alfalfalfa.com/index.rdf',
-    category: '総合'
+    category: '総合',
+    headerImage: 'https://alfalfalfa.com/image/header_logo.png'
   },
   {
     name: '痛いニュース',
     url: 'https://itainews.com/index.rdf',
-    category: 'ニュース'
+    category: 'ニュース',
+    headerImage: 'https://itainews.com/image/logo.png'
   },
   {
     name: 'ニュー速VIPブログ',
     url: 'https://news4vip.livedoor.biz/index.rdf',
-    category: 'VIP'
+    category: 'VIP',
+    headerImage: 'https://news4vip.livedoor.biz/img/header.png'
   },
   {
     name: 'ニュース23',
     url: 'http://blog.livedoor.jp/news23vip/index.rdf',
-    category: 'ニュース'
+    category: 'ニュース',
+    headerImage: 'https://blog.livedoor.jp/news23vip/imgs/blog_logo.gif'
   },
   {
     name: 'ハムスター速報',
     url: 'https://hamusoku.com/index.rdf',
-    category: '総合'
+    category: '総合',
+    headerImage: 'https://hamusoku.com/img/header_logo.png'
   },
   {
     name: '気になるニュース',
     url: 'http://blog.livedoor.jp/kinisoku/index.rdf',
-    category: 'ニュース'
+    category: 'ニュース',
+    headerImage: null
   },
   {
     name: 'オレ的ゲーム速報',
     url: 'https://orusoku.com/index.rdf',
-    category: 'ゲーム'
+    category: 'ゲーム',
+    headerImage: null
   },
   {
     name: 'イミフwwwうはwwwwおkwww',
     url: 'https://imihu.net/index.rdf',
-    category: '総合'
+    category: '総合',
+    headerImage: null
   },
   {
     name: 'ゴールデンタイムズ',
     url: 'http://blog.livedoor.jp/goldennews/index.rdf',
-    category: 'ニュース'
+    category: 'ニュース',
+    headerImage: null
   },
   {
     name: 'ぶる速-VIP',
     url: 'http://burusoku-vip.com/index.rdf',
-    category: 'VIP'
+    category: 'VIP',
+    headerImage: null
   },
   {
     name: 'ワロタじゃねーよ',
     url: 'http://brow2ing.com/index.rdf',
-    category: '総合'
+    category: '総合',
+    headerImage: null
   },
   {
     name: 'ツインテール速報',
     url: 'https://twintailsokuhou.blog.jp/index.rdf',
-    category: 'アニメ'
+    category: 'アニメ',
+    headerImage: null
   },
   {
     name: 'ひまゲ速報',
@@ -298,7 +331,7 @@ export async function GET() {
                 creator: item.creator || feedInfo.name,
                 categories: item.categories || [feedInfo.category],
                 description: item['content:encoded'] || item.description || '',
-                thumbnail: thumbnail,
+                thumbnail: thumbnail || generatePlaceholderImage(feedInfo.name, feedInfo.category),
               };
             })
           };
