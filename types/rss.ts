@@ -22,5 +22,11 @@ export interface RSSFeed {
 export interface RSSResponse {
   feeds: RSSFeed[];
   allItems: RSSItem[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    hasMore: boolean;
+  };
   timestamp: string;
 }

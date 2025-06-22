@@ -3,6 +3,10 @@ import Parser from 'rss-parser';
 
 const parser = new Parser();
 
+// 簡易インメモリキャッシュ
+const cache = new Map<string, { data: any; timestamp: number }>();
+const CACHE_DURATION = 5 * 60 * 1000; // 5分間
+
 // カテゴリ別の色設定
 function generatePlaceholderImage(siteName: string, category: string): string {
   const categoryColors: { [key: string]: string } = {
@@ -295,32 +299,41 @@ const RSS_FEEDS = [
   }
 ];
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    const allFeeds = await Promise.all(
+    const { searchParams } = new URL(request.url);
+    const page = parseInt(searchParams.get('page') || '0');
+    const limit = parseInt(searchParams.get('limit') || '50');
+    
+    // キャッシュチェック
+    const cacheKey = `rss-feeds-${page}-${limit}`;
+    const cached = cache.get(cacheKey);
+    if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+      return NextResponse.json(cached.data);
+    }
+    
+    // 高速化: 各フィードから少ない件数で取得し、並列処理を最適化
+    const allFeeds = await Promise.allSettled(
       RSS_FEEDS.map(async (feedInfo) => {
         try {
-          const feed = await parser.parseURL(feedInfo.url);
+          // タイムアウト付きでフィードを取得
+          const timeoutPromise = new Promise((_, reject) => 
+            setTimeout(() => reject(new Error('Timeout')), 3000) // 3秒タイムアウト
+          );
+          
+          const feed = await Promise.race([
+            parser.parseURL(feedInfo.url),
+            timeoutPromise
+          ]) as any;
           
           return {
             source: feedInfo.name,
             category: feedInfo.category,
-            items: feed.items.map((item) => {
-              // content:encodedから画像を抽出
+            items: feed.items.slice(0, 15).map((item: any) => { // 各フィードから15件に制限
+              // 画像取得を簡略化（最初の画像のみ）
               const contentEncoded = item['content:encoded'] || '';
-              let thumbnail = '';
-              
-              // アイキャッチ画像を優先的に取得
-              const eyeCatchMatch = contentEncoded.match(/<div class="eye-catch">[\s\S]*?<img[^>]+src="([^"]+)"[^>]*>/);
-              if (eyeCatchMatch) {
-                thumbnail = eyeCatchMatch[1];
-              } else {
-                // 通常の画像タグから最初の画像を取得
-                const imgMatch = contentEncoded.match(/<img[^>]+src="([^"]+)"[^>]*>/);
-                if (imgMatch) {
-                  thumbnail = imgMatch[1];
-                }
-              }
+              const imgMatch = contentEncoded.match(/<img[^>]+src="([^"]+)"[^>]*>/);
+              const thumbnail = imgMatch ? imgMatch[1] : null;
               
               return {
                 id: item.guid || item.link || '',
@@ -347,9 +360,14 @@ export async function GET() {
       })
     );
 
+    // 成功したフィードのみを処理
+    const successfulFeeds = allFeeds
+      .filter((result): result is PromiseFulfilledResult<any> => result.status === 'fulfilled')
+      .map(result => result.value);
+
     // すべてのアイテムを統合して時系列順にソート
-    const allItems = allFeeds.flatMap(feed => 
-      feed.items.map(item => ({
+    const allItems = successfulFeeds.flatMap(feed => 
+      feed.items.map((item: any) => ({
         ...item,
         source: feed.source,
         sourceCategory: feed.category
@@ -363,11 +381,27 @@ export async function GET() {
       return dateB - dateA;
     });
 
-    return NextResponse.json({
-      feeds: allFeeds,
-      allItems: allItems.slice(0, 50), // 最新50件を返す
+    // ページネーション
+    const startIndex = page * limit;
+    const endIndex = startIndex + limit;
+    const paginatedItems = allItems.slice(startIndex, endIndex);
+
+    const responseData = {
+      feeds: successfulFeeds,
+      allItems: paginatedItems,
+      pagination: {
+        page,
+        limit,
+        total: allItems.length,
+        hasMore: endIndex < allItems.length
+      },
       timestamp: new Date().toISOString()
-    });
+    };
+
+    // キャッシュに保存
+    cache.set(cacheKey, { data: responseData, timestamp: Date.now() });
+
+    return NextResponse.json(responseData);
   } catch (error) {
     console.error('RSS feed error:', error);
     return NextResponse.json(

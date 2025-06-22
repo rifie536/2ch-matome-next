@@ -40,7 +40,7 @@ const generateMockThread = (id: string, index: number): Thread => {
     createdAt: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000),
     updatedAt: new Date(Date.now() - Math.random() * 24 * 60 * 60 * 1000),
     type: index === 0 ? 'featured' : index % 5 === 0 ? 'large' : 'normal',
-    tags: ['話題', 'ニュース', '議論', '質問'][Math.floor(Math.random() * 4)].split(),
+    tags: [['話題', 'ニュース', '議論', '質問'][Math.floor(Math.random() * 4)]],
   };
 };
 

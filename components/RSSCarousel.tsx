@@ -60,6 +60,8 @@ export function RSSCarousel({ threads }: RSSCarouselProps) {
                 src={thread.thumbnail} 
                 alt={thread.title}
                 className="absolute inset-0 w-full h-full object-cover"
+                loading="lazy"
+                decoding="async"
               />
             ) : (
               <div className="absolute inset-0 bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-8xl text-white/50">

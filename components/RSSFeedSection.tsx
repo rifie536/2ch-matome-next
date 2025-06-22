@@ -34,7 +34,7 @@ export function RSSFeedSection() {
         </h2>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {data.allItems.slice(0, 20).map((item) => (
+          {data?.pages?.[0]?.allItems?.slice(0, 20).map((item: any) => (
             <a
               key={item.id}
               href={item.link}
