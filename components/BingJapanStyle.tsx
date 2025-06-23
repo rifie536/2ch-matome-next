@@ -359,16 +359,96 @@ export function BingJapanStyle() {
                     
                     {/* 通常のカード */}
                     {rssThreads.slice(5).map((thread, index) => {
-                      // 4列レイアウトでの2列分のカードのパターン
-                      // 3番目と10番目のカードを2列分に
-                      const isWideCard = index === 2 || index === 9;
                       const isLastItem = index === rssThreads.slice(5).length - 1;
+                      
+                      // 複雑なレイアウトパターンを計算
+                      const getLayoutPattern = (cardIndex: number) => {
+                        // 最初のカードの行と位置を計算
+                        // 1行目はカルーセル(2列) + カード2個なので、特別処理
+                        if (cardIndex < 2) {
+                          return 1; // 1行目の残り2つは1列
+                        }
+                        
+                        // 2行目以降の計算
+                        const adjustedIndex = cardIndex - 2; // 1行目の2個を引く
+                        
+                        // 各行のパターン定義（2行目から）
+                        const rowPatterns = [
+                          [1, 1, 2],    // 2行目: 1列×2 + 2列×1
+                          [2, 1, 1],    // 3行目: 2列×1 + 1列×2
+                          [1, 1, 1, 1], // 4行目: 1列×4
+                          [2, 1, 1],    // 5行目: 2列×1 + 1列×2
+                          [1, 1, 2],    // 6行目: 1列×2 + 2列×1
+                          [1, 1, 1, 1], // 7行目: 1列×4
+                          [1, 1, 1, 1], // 8行目: 1列×4
+                          [2, 1, 1],    // 9行目: 2列×1 + 1列×2
+                        ];
+                        
+                        // 10行目以降の繰り返しパターン
+                        const repeatPatterns = [
+                          [1, 1, 1, 1], // パターン1: 1列×4
+                          [1, 1, 2],    // パターン2: 1列×2 + 2列×1
+                          [2, 1, 1]     // パターン3: 2列×1 + 1列×2
+                        ];
+                        
+                        // 現在の行を特定
+                        let currentCardCount = 0;
+                        let currentRow = 0;
+                        
+                        // 2-9行目をチェック
+                        for (let i = 0; i < rowPatterns.length; i++) {
+                          const pattern = rowPatterns[i];
+                          const cardsInRow = pattern.filter(col => col === 2).length + pattern.filter(col => col === 1).length;
+                          
+                          if (adjustedIndex < currentCardCount + cardsInRow) {
+                            // この行にカードがある
+                            const cardPositionInRow = adjustedIndex - currentCardCount;
+                            let colCount = 0;
+                            
+                            for (let j = 0; j < pattern.length; j++) {
+                              if (colCount === cardPositionInRow) {
+                                return pattern[j];
+                              }
+                              colCount += (pattern[j] === 2 ? 1 : 1);
+                            }
+                          }
+                          currentCardCount += cardsInRow;
+                          currentRow++;
+                        }
+                        
+                        // 10行目以降の繰り返しパターン
+                        const remainingCards = adjustedIndex - currentCardCount;
+                        let repeatCardCount = 0;
+                        let repeatRowIndex = 0;
+                        
+                        while (true) {
+                          const pattern = repeatPatterns[repeatRowIndex % repeatPatterns.length];
+                          const cardsInRow = pattern.filter(col => col === 2).length + pattern.filter(col => col === 1).length;
+                          
+                          if (remainingCards < repeatCardCount + cardsInRow) {
+                            const cardPositionInRow = remainingCards - repeatCardCount;
+                            let colCount = 0;
+                            
+                            for (let j = 0; j < pattern.length; j++) {
+                              if (colCount === cardPositionInRow) {
+                                return pattern[j];
+                              }
+                              colCount += (pattern[j] === 2 ? 1 : 1);
+                            }
+                          }
+                          repeatCardCount += cardsInRow;
+                          repeatRowIndex++;
+                        }
+                      };
+                      
+                      const colSpan = getLayoutPattern(index);
+                      const isWideCard = colSpan === 2;
                       
                       return (
                         <div
                           key={thread.id}
                           ref={isLastItem ? lastElementRef : null}
-                          style={{gridColumn: isWideCard ? 'span 2' : 'span 1'}}
+                          style={{gridColumn: `span ${colSpan}`}}
                         >
                           {isWideCard ? (
                             // 2列分のカード - 画像で満たす
