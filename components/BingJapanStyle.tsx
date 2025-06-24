@@ -41,6 +41,9 @@ export function BingJapanStyle() {
       if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
         fetchNextPage();
       }
+    }, {
+      // 要素が画面に表示される500px前に読み込みを開始
+      rootMargin: '500px',
     });
     if (node) observerRef.current.observe(node);
   }, [isLoading, hasNextPage, isFetchingNextPage, fetchNextPage]);
