@@ -10,6 +10,7 @@ const CACHE_DURATION = 5 * 60 * 1000; // 5分間
 // カテゴリ別の色設定
 function generatePlaceholderImage(siteName: string, category: string): string {
   const categoryColors: { [key: string]: string } = {
+    'ネタ速報': '3182CE', // 青
     'ニュース': 'E53E3E', // 赤
     'VIP': '38A169', // 緑
     'ゲーム': '3182CE', // 青
@@ -33,269 +34,269 @@ const RSS_FEEDS = [
   {
     name: 'アルファルファモザイク',
     url: 'https://alfalfalfa.com/index.rdf',
-    category: '総合',
+    category: 'ネタ速報',
     headerImage: 'https://alfalfalfa.com/image/header_logo.png'
   },
   {
     name: '痛いニュース',
     url: 'https://itainews.com/index.rdf',
-    category: 'ニュース',
+    category: 'ネタ速報',
     headerImage: 'https://itainews.com/image/logo.png'
   },
   {
     name: 'ニュー速VIPブログ',
     url: 'https://news4vip.livedoor.biz/index.rdf',
-    category: 'VIP',
+    category: 'ネタ速報',
     headerImage: 'https://news4vip.livedoor.biz/img/header.png'
   },
   {
     name: 'ニュース23',
     url: 'http://blog.livedoor.jp/news23vip/index.rdf',
-    category: 'ニュース',
+    category: 'ネタ速報',
     headerImage: 'https://blog.livedoor.jp/news23vip/imgs/blog_logo.gif'
   },
   {
     name: 'ハムスター速報',
     url: 'https://hamusoku.com/index.rdf',
-    category: '総合',
+    category: 'ネタ速報',
     headerImage: 'https://hamusoku.com/img/header_logo.png'
   },
   {
     name: '気になるニュース',
     url: 'http://blog.livedoor.jp/kinisoku/index.rdf',
-    category: 'ニュース',
+    category: 'ネタ速報',
     headerImage: null
   },
   {
     name: 'オレ的ゲーム速報',
     url: 'https://orusoku.com/index.rdf',
-    category: 'ゲーム',
+    category: 'ネタ速報',
     headerImage: null
   },
   {
     name: 'イミフwwwうはwwwwおkwww',
     url: 'https://imihu.net/index.rdf',
-    category: '総合',
+    category: 'ネタ速報',
     headerImage: null
   },
   {
     name: 'ゴールデンタイムズ',
     url: 'http://blog.livedoor.jp/goldennews/index.rdf',
-    category: 'ニュース',
+    category: 'ネタ速報',
     headerImage: null
   },
   {
     name: 'ぶる速-VIP',
     url: 'http://burusoku-vip.com/index.rdf',
-    category: 'VIP',
+    category: 'ネタ速報',
     headerImage: null
   },
   {
     name: 'ワロタじゃねーよ',
     url: 'http://brow2ing.com/index.rdf',
-    category: '総合',
+    category: 'ネタ速報',
     headerImage: null
   },
   {
     name: 'ツインテール速報',
     url: 'https://twintailsokuhou.blog.jp/index.rdf',
-    category: 'アニメ',
+    category: 'ネタ速報',
     headerImage: null
   },
   {
     name: 'ひまゲ速報',
     url: 'http://himasoku.com/index.rdf',
-    category: 'ゲーム'
+    category: 'ネタ速報'
   },
   {
     name: '流速VIP',
     url: 'http://ryusoku.com/index.rdf',
-    category: 'VIP'
+    category: 'ネタ速報'
   },
   {
     name: '痛いニュース(ノ∀`)',
     url: 'http://itaishinja.com/index.rdf',
-    category: 'ニュース'
+    category: 'ネタ速報'
   },
   {
     name: 'ワーキングニュース',
     url: 'http://workingnews117.com/index.rdf',
-    category: '仕事'
+    category: 'ネタ速報'
   },
   {
     name: 'NWKニュース',
     url: 'https://nwknews.jp/index.rdf',
-    category: 'ニュース'
+    category: 'ネタ速報'
   },
   {
     name: '哲学ニュース',
     url: 'https://news.2chblog.jp/index.rdf',
-    category: '哲学'
+    category: 'ネタ速報'
   },
   {
     name: 'VSNP',
     url: 'http://www.vsnp.net/index.rdf',
-    category: '総合'
+    category: 'ネタ速報'
   },
   {
     name: 'カオスちゃんねる',
     url: 'http://chaos2ch.com/index.rdf',
-    category: '総合'
+    category: 'ネタ速報'
   },
   {
     name: 'まとめたニュース',
     url: 'http://matometanews.com/index.rdf',
-    category: 'ニュース'
+    category: 'ネタ速報'
   },
   {
     name: 'BigCity東京',
     url: 'http://bipblog.com/index.rdf',
-    category: '総合'
+    category: 'ネタ速報'
   },
   {
     name: 'おたくニュース',
     url: 'https://otanews.livedoor.biz/index.rdf',
-    category: 'オタク'
+    category: 'ネタ速報'
   },
   {
     name: 'なんでもまとめ',
     url: 'http://nantuka.blog119.fc2.com/index.rdf',
-    category: '総合'
+    category: 'ネタ速報'
   },
   {
     name: 'フットボールネット',
     url: 'https://footballnet.2chblog.jp/index.rdf',
-    category: 'スポーツ'
+    category: 'ネタ速報'
   },
   {
     name: 'おりょうり速報',
     url: 'https://oryouri.2chblog.jp/index.rdf',
-    category: '料理'
+    category: 'ネタ速報'
   },
   {
     name: 'ライフハックちゃんねる',
     url: 'https://lifehack2ch.livedoor.biz/index.rdf',
-    category: 'ライフハック'
+    category: 'ネタ速報'
   },
   {
     name: 'お金の教養講座',
     url: 'https://money-life.doorblog.jp/index.rdf',
-    category: 'マネー'
+    category: 'ネタ速報'
   },
   {
     name: '2chコピペ',
     url: 'http://2chcopipe.com/index.rdf',
-    category: 'コピペ'
+    category: 'ネタ速報'
   },
   {
     name: 'らむせくと',
     url: 'http://lamsect.jp/index.rdf',
-    category: '総合'
+    category: 'ネタ速報'
   },
   {
     name: 'ガハろぐNews',
     url: 'https://gahalog.2chblog.jp/index.rdf',
-    category: '総合'
+    category: 'ネタ速報'
   },
   {
     name: '2ch名人',
     url: 'https://i2chmeijin.blog.fc2.com/index.rdf',
-    category: '将棋'
+    category: 'ネタ速報'
   },
   {
     name: 'あやちゃんニュース',
     url: 'https://ayacnews2nd.com/index.rdf',
-    category: 'ニュース'
+    category: 'ネタ速報'
   },
   {
     name: 'カルカンタイムズ',
     url: 'https://karukantimes.com/index.rdf',
-    category: '総合'
+    category: 'ネタ速報'
   },
   {
     name: 'ねたAtoZ',
     url: 'http://www.negisoku.com/index.rdf',
-    category: 'ネタ'
+    category: 'ネタ速報'
   },
   {
     name: '登山ちゃんねる',
     url: 'https://tozanchannel.blog.jp/index.rdf',
-    category: '登山'
+    category: 'ネタ速報'
   },
   {
     name: 'アウトドアまとめちゃん',
     url: 'https://outdoormatome.com/index.rdf',
-    category: 'アウトドア'
+    category: 'ネタ速報'
   },
   {
     name: '不思議.net',
     url: 'http://world-fusigi.net/index.rdf',
-    category: '不思議'
+    category: 'ネタ速報'
   },
   {
     name: 'ほぼ日刊たまご',
     url: 'http://blog.livedoor.jp/bluejay01-review/index.rdf',
-    category: 'レビュー'
+    category: 'ネタ速報'
   },
   {
     name: 'ねこめ〜わく',
     url: 'http://blog.livedoor.jp/waruneko00326-002/index.rdf',
-    category: '猫'
+    category: 'ネタ速報'
   },
   {
     name: 'IT速報',
     url: 'http://blog.livedoor.jp/itsoku/index.rdf',
-    category: 'IT'
+    category: 'ネタ速報'
   },
   {
     name: '理系にゅーす',
     url: 'https://rikeinews.blog.jp/index.rdf',
-    category: '理系'
+    category: 'ネタ速報'
   },
   {
     name: 'くるまにあ速報',
     url: 'https://kurumachannel.com/index.rdf',
-    category: '車'
+    category: 'ネタ速報'
   },
   {
     name: '疑問ある？',
     url: 'http://shitsumonaru.com/index.rdf',
-    category: '疑問'
+    category: 'ネタ速報'
   },
   {
     name: '音楽業界ぶっかけ術',
     url: 'https://otonary.net/index.rdf',
-    category: '音楽'
+    category: 'ネタ速報'
   },
   {
     name: 'GFoodd',
     url: 'http://gfoodd.com/index.rdf',
-    category: 'グルメ'
+    category: 'ネタ速報'
   },
   {
     name: 'えいご速報',
     url: 'https://eigotoka.com/index.rdf',
-    category: '英語'
+    category: 'ネタ速報'
   },
   {
     name: 'フード速報',
     url: 'https://foodsokuhou.com/index.rdf',
-    category: 'グルメ'
+    category: 'ネタ速報'
   },
   {
     name: 'うしみつ',
     url: 'http://usi32.com/index.rdf',
-    category: 'オカルト'
+    category: 'ネタ速報'
   },
   {
     name: '修羅場まとめ',
     url: 'https://shuraba-matome.com/index.rdf',
-    category: '修羅場'
+    category: 'ネタ速報'
   },
   {
     name: 'わたるきち',
     url: 'https://watarukiti.com/index.rdf',
-    category: '総合'
+    category: 'ネタ速報'
   }
 ];
 

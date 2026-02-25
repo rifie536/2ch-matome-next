@@ -151,6 +151,11 @@ export function BingJapanStyle() {
     categories: item.categories,
   }));
 
+  // ピックアップ記事: 実際のサムネイル画像がある記事を優先選出
+  const pickupThreads = rssThreads
+    .filter(thread => thread.thumbnail && !thread.thumbnail.includes('ui-avatars.com'))
+    .slice(0, 25);
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/30 flex items-center justify-center">
@@ -238,6 +243,10 @@ export function BingJapanStyle() {
         {/* Top Carousel */}
         <div className="bg-black/10 backdrop-blur-sm border-b border-white/10 py-3">
           <div className="container mx-auto px-4 relative group">
+            {/* ピックアップラベル */}
+            <div className="text-center mb-2">
+              <span className="text-xs font-bold text-white/70 tracking-widest uppercase">PICKUP</span>
+            </div>
             {/* スクリーンリーダー用の操作説明 */}
             <span id="carousel-instructions" className="sr-only">
               矢印キーでカルーセルを操作できます。左矢印で前へ、右矢印で次へ移動します。
@@ -299,8 +308,8 @@ export function BingJapanStyle() {
                   }
                 }}
               >
-              {/* 25個の要素を表示 */}
-              {rssThreads.slice(0, 25).map((thread) => (
+              {/* ピックアップ記事を表示 */}
+              {pickupThreads.map((thread) => (
                 <a
                   key={thread.id}
                   href={thread.isExternal ? thread.link : `/thread/${thread.id}`}
